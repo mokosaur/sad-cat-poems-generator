@@ -1,5 +1,7 @@
 import os
 
+__location__ = os.path.dirname(os.path.realpath(__file__))
+
 
 def load_author(author, files=None, keep_empty=False):
     """Loads poems written by the given author.
@@ -10,14 +12,14 @@ def load_author(author, files=None, keep_empty=False):
     :return: Dictionary in which keys are titles of poems, and values are their content
     """
     if not files:
-        files = os.listdir(author)
+        files = os.listdir(os.path.join(__location__, author))
     else:
         files = [f if f[-4:] == '.txt' else f + '.txt' for f in files]
     poems = {}
     for f in files:
         title = ''
         content = ''
-        with open(os.path.join(author, f), 'r', encoding='utf8') as file:
+        with open(os.path.join(__location__, author, f), 'r', encoding='utf8') as file:
             for line in file:
                 clean_line = line.replace('\ufeff', '')
                 if clean_line.startswith("#"):
