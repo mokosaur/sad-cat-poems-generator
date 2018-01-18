@@ -28,6 +28,6 @@ def load_author(author, files=None, keep_empty=False):
                         content = ''
                     title = clean_line[1:].strip()
                 else:
-                    if keep_empty or clean_line != '\n':
+                    if keep_empty or clean_line.strip() != '':
                         content += clean_line
     return poems

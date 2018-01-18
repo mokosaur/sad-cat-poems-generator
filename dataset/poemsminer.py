@@ -4,6 +4,12 @@ import os
 
 
 def mine(url, author, filename='poems'):
+    """Finds all poems written by the author and saves them to a file.
+
+    :param url: Author's page
+    :param author: Author's name
+    :param filename: Name of a generated file
+    """
     response = requests.get(url)
     if response.status_code == 200:
         content = response.content
@@ -24,10 +30,21 @@ def mine(url, author, filename='poems'):
 
 
 def get_links(soup, url):
+    """Parses a page to find links to poems.
+
+    :param soup: BeautifulSoup object with the parsed HTML
+    :param url: Author's page
+    :return: List of urls with poems
+    """
     return [a.get('href') for ul in soup.find_all('ul') for a in ul.find_all('a') if a.get('href').startswith(url)]
 
 
 def get_poem(soup):
+    """Parses a page to get the title and the content of a poem.
+
+    :param soup: BeautifulSoup object with the parsed HTML
+    :return: 2-tuple containing the title and the content of the poem.
+    """
     title = soup.title.text
     poem = soup.find(attrs={"class": "blog-post"}).text
     return title, poem
