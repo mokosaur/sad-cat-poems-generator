@@ -1,45 +1,17 @@
 import re
 
-tren1 = "Wszytki płacze, wszytki łzy Heraklitowe \n" \
-        "I lamenty, i skargi Symonidowe,\n" \
-        "Wszytki troski na świecie, wszytki wzdychania\n" \
-        "I żale, i frasunki, i rąk łamania,\n" \
-        "Wszytki a wszytki za raz w dom się mój noście,\n" \
-        "A mnie płakać mej wdzięcznej dziewki pomożcie,\n" \
-        "Z którą mię niepobożna śmierć rozdzieliła\n" \
-        "I wszytkich moich pociech nagle zbawiła.\n" \
-        "Tak więc smok, upatrzywszy gniazdko kryjome,\n" \
-        "Słowiczki liche zbiera, a swe łakome\n" \
-        "Gardło pasie; tymczasem matka szczebiece\n" \
-        "Uboga, a na zbójcę coraz się miece,\n" \
-        "Prózno ! bo i na sarnę okrutnik zmierza,\n" \
-        "A ta nieboga ledwe umyka pierza.\n" \
-        "Prózno płakać - podobno drudzy rzeczecie.\n" \
-        "Cóż, prze Bóg żywy, nie jest prózno na świecie?\n" \
-        "Wszytko prózno! Macamy, gdzie miękcej w rzeczy,\n" \
-        "A ono wszędy ciśnie! Błąd - wiek człowieczy!\n" \
-        "Nie wiem, co lżej : czy w smutku jawnie żałować,\n" \
-        "Czyli się z przyrodzeniem gwałtem mocować?"
-
-toast = "Nie ma nic prócz tych liści, co na drzewach zmarły,\n" \
-        "Nic nie ma prócz tych wichrów, którymi przewiało,\n" \
-        "Nic prócz śladów świetności, co się już zatarły\n" \
-        "Nie stanie się nic więcej. Już wszystko się stało."
-
-koniec_wieku = "Przekleństwo-... tylko dziki, kiedy się skaleczy,\n" \
-               "złorzeczy swemu bogu, skrytemu w przestworze.\n" \
-               "Ironia-... Lecz największe z szyderstw czyż się może\n" \
-               "równać z ironią biegu najzwyklejszych rzeczy"
+from dataset.loader import load_author
 
 class Recognizer:
     def analyze(self, text):
         text = re.sub('[.,!?]+', '', text)
         to_analyze = []
         for line in text.split("\n"):
-            if len(line.split()[-1]) < 7:
-                to_analyze.append((" ".join(line.split()[-2:])))
-            else:
-                to_analyze.append(line.split()[-1])
+            if line != "":
+                if len(line.split()[-1]) < 7:
+                    to_analyze.append((" ".join(line.split()[-2:])))
+                else:
+                    to_analyze.append(line.split()[-1])
         self.check_if_rymy_parzyste(to_analyze)
         self.check_if_rymy_przeplatane(to_analyze)
         self.check_if_rymy_okalajace(to_analyze)
@@ -86,6 +58,4 @@ class Recognizer:
 
 
 recognizer = Recognizer()
-recognizer.analyze(tren1)
-recognizer.analyze(toast)
-recognizer.analyze(koniec_wieku)
+recognizer.analyze(load_author("lesmian", ["poems"])["Tęcza - Bolesław Leśmian"])
