@@ -1,3 +1,5 @@
+import os
+import random
 import re
 
 from dataset.loader import load_author
@@ -50,8 +52,8 @@ class Recognizer:
         # print("Rymy okalające: ", counter, all_fours)
         return counter / all_fours > 0.5
 
-    def are_rhymes(self, a, b):
-        return a[-2:] == b[-2:]
+    def are_rhymes(self, a, b, match=2):
+        return a[-match:] == b[-match:]
 
     def check_for_patterns(self, to_analyze):
         patterns = ['_' for i in range(len(to_analyze))]
@@ -65,11 +67,13 @@ class Recognizer:
                         patterns[j] = patterns[i]
         return patterns
 
-
-wiersze = load_author("lesmian", ["poems"]).items()
-phonetizer = StandardPhonetizer()
-for tytuł, wiersz in wiersze:
-    if tytuł == "*** (Bóg mnie opuścił - nie wiem czemu...) - Bolesław Leśmian":
-        wiersz = phonetizer.transform([wiersz])[0]
-        recognizer = Recognizer()
-        recognizer.analyze(wiersz)
+    def find_rhyme_for_word(self, word, word_list):
+        word_list = StandardPhonetizer().transform(word_list)
+        rhymes = []
+        for i, potential in enumerate(word_list):
+            if word != potential and self.are_rhymes(word, potential, match=3):
+                rhymes.append(i)
+        if len(rhymes) > 1:
+            return random.choice(rhymes)
+        else:
+            return None
