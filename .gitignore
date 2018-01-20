@@ -2,3 +2,5 @@
 dataset/*/
 .ipynb_checkpoints
 __pycache__/
+*.hdf5
+!**/trener.hdf5
