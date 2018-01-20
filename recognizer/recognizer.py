@@ -1,10 +1,13 @@
 import re
 
 from dataset.loader import load_author
+from preprocessing.phonetizer import StandardPhonetizer
+
 
 class Recognizer:
     def analyze(self, text):
-        text = re.sub('[.,!?]+', '', text)
+        text = re.sub('[^\w \n]+', '', text)
+        text = text.lower()
         to_analyze = []
         for line in text.split("\n"):
             if line != "":
@@ -12,50 +15,61 @@ class Recognizer:
                     to_analyze.append((" ".join(line.split()[-2:])))
                 else:
                     to_analyze.append(line.split()[-1])
-        self.check_if_rymy_parzyste(to_analyze)
-        self.check_if_rymy_przeplatane(to_analyze)
-        self.check_if_rymy_okalajace(to_analyze)
+        patterns = self.check_for_patterns(to_analyze)
+        self.check_if_rymy_parzyste(patterns)
+        self.check_if_rymy_przeplatane(patterns)
+        self.check_if_rymy_okalajace(patterns)
 
-    def check_if_rymy_parzyste(self, to_analyze):
+    def check_if_rymy_parzyste(self, patterns):
         counter = 0
         all_pairs = 0
-        for (a, b) in zip(to_analyze[:-1:2], to_analyze[1::2]):
-            if self.are_rhymes(a, b):
+        for (a, b) in zip(patterns[:-1:2], patterns[1::2]):
+            if a == b:
                 counter += 1
             all_pairs += 1
-        if counter / all_pairs > 0.5:
-            print("Wiersz ma rymy parzyste")
+        # print("Rymy parzyste: ", counter, all_pairs)
         return counter / all_pairs > 0.5
 
-    def check_if_rymy_przeplatane(self, to_analyze):
+    def check_if_rymy_przeplatane(self, patterns):
         counter = 0
         all_pairs = 0
-        for (a, b) in zip(to_analyze[0:], to_analyze[2:]):
-            if self.are_rhymes(a, b):
+        for (a, b) in zip(patterns[0:], patterns[2:]):
+            if a == b:
                 counter += 1
             all_pairs += 1
-        if counter / all_pairs > 0.5:
-            print("Wiersz ma rymy przeplatane")
+        # print("Rymy przeplatane: ", counter, all_pairs)
         return counter / all_pairs > 0.5
 
-    def check_if_rymy_okalajace(self, to_analyze):
+    def check_if_rymy_okalajace(self, patterns):
         counter = 0
         all_fours = 0
-        for (a, b, c, d) in zip(to_analyze[0::4], to_analyze[3::4], to_analyze[1::4], to_analyze[2::4]):
-            if self.are_rhymes(a, b) and self.are_rhymes(c, d):
+        for (a, b, c, d) in zip(patterns[0::4], patterns[3::4], patterns[1::4], patterns[2::4]):
+            if a == b and c == d:
                 counter += 1
             all_fours += 1
-        if counter / all_fours > 0.5:
-            print("Wiersz ma rymy okalające")
+        # print("Rymy okalające: ", counter, all_fours)
         return counter / all_fours > 0.5
 
     def are_rhymes(self, a, b):
-        counter = 0
-        for (el_a, el_b) in zip(a[::-1], b[::-1]):
-            if el_a == el_b:
-                counter += 1
-        return counter >= 3
+        return a[-2:] == b[-2:]
+
+    def check_for_patterns(self, to_analyze):
+        patterns = ['_' for i in range(len(to_analyze))]
+        current_letter = ord("a")
+        for i in range(len(to_analyze)):
+            if patterns[i] == "_":
+                patterns[i] = chr(current_letter)
+                current_letter += 1
+                for j in range(i+1, len(to_analyze)):
+                    if self.are_rhymes(to_analyze[i], to_analyze[j]):
+                        patterns[j] = patterns[i]
+        return patterns
 
 
-recognizer = Recognizer()
-recognizer.analyze(load_author("lesmian", ["poems"])["Tęcza - Bolesław Leśmian"])
+wiersze = load_author("lesmian", ["poems"]).items()
+phonetizer = StandardPhonetizer()
+for tytuł, wiersz in wiersze:
+    if tytuł == "*** (Bóg mnie opuścił - nie wiem czemu...) - Bolesław Leśmian":
+        wiersz = phonetizer.transform([wiersz])[0]
+        recognizer = Recognizer()
+        recognizer.analyze(wiersz)
