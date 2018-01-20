@@ -23,8 +23,9 @@ def mine(url, author, filename='poems'):
                     page = requests.get(link).content
                     poem_soup = BeautifulSoup(page, 'html.parser')
                     title, poem = get_poem(poem_soup)
-                    file.write("# %s\n\n" % title)
-                    file.write("%s\n" % poem)
+                    if "english" not in title and "esperanto" not in title and "[en]" not in title:
+                        file.write("# %s\n\n" % title)
+                        file.write("%s\n" % poem)
                 except requests.exceptions.ConnectionError:
                     print("Failed to connect with %s." % link)
 
