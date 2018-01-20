@@ -6,7 +6,10 @@ class BaseGenerator(ABC):
         self.preprocessor = preprocessor
 
     def fit(self, X):
-        X_transformed = self.preprocessor.transform(X)
+        if self.preprocessor:
+            X_transformed = self.preprocessor.transform(X)
+        else:
+            X_transformed = X
         self._fit_transformed(X_transformed)
 
     @abstractmethod
@@ -18,5 +21,5 @@ class BaseGenerator(ABC):
         return self.generate(*args, **kwargs)
 
     @abstractmethod
-    def generate(self):
+    def generate(self, *args, **kwargs):
         ...
