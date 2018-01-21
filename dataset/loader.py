@@ -38,6 +38,10 @@ def load_author(author, files=None, keep_empty=False, clean=True, only_polish=Tr
 
 
 def clean_data(text):
+    """Fixes broken symbols in poems.
+
+    :param text: Broken text that has to be fixed
+    :return: Text with correct UTF8 symbols"""
     corrections = {
         'Ã³': 'ó',
         'Å¼': 'ż',
@@ -55,4 +59,9 @@ def clean_data(text):
 
 
 def polish_title(title):
+    """Checks if the title is in Polish.
+
+    :param title: Title of the poem
+    :return: True if the title indicates a Polish poem
+    """
     return "english" not in title and "esperanto" not in title and "[en]" not in title

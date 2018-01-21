@@ -58,7 +58,7 @@ class LSTMGenerator(BaseGenerator):
                 y_data.append(self.lookup[x_rev[i + self.sequence_length].lower()])
         return X_data, y_data
 
-    def generate(self, pattern=None, model_name=None, data=None, temperature=0.25):
+    def generate(self, pattern=None, model_name=None, data=None, rhyme_length=0, temperature=0.25):
         if model_name:
             self.model = load_model(os.path.join(os.path.dirname(os.path.abspath(__file__)), "models", model_name))
         if data:
@@ -71,16 +71,24 @@ class LSTMGenerator(BaseGenerator):
         if self.reverse_generation:
             pattern = pattern[::-1]
         gentext = [x for x in pattern]
-        pattern = [self.lookup[x.lower()] for x in pattern.zfill(self.sequence_length)]
+        pattern = [self.lookup[x.lower()] for x in pattern.zfill(self.sequence_length).replace('0', ' ')]
         for i in range(1000):
             x = np.reshape(pattern, (1, len(pattern), 1))
             x = x / len(self.lookup)
             prediction = self.model.predict(x, verbose=0)
             index = self._get_prediction(prediction, temperature) if temperature else np.argmax(prediction)
             result = lookup_inverse[index]
-            gentext.append(result)
-            pattern.append(index)
-            pattern = pattern[1:len(pattern)]
+            if result == '\n' and rhyme_length and self.reverse_generation and gentext.count('\n') % 2:
+                last_line = ''.join(gentext).split('\n')[-1]
+                gentext.append(result)
+                gentext += [c for c in last_line[:rhyme_length]]
+                pattern.append(index)
+                pattern += [self.lookup[c] for c in last_line[:rhyme_length]]
+                pattern = pattern[-self.sequence_length:]
+            else:
+                gentext.append(result)
+                pattern.append(index)
+                pattern = pattern[1:]
         if self.reverse_generation:
             gentext = gentext[::-1]
         return ''.join(gentext)
