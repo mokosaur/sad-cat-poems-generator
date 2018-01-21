@@ -1,8 +1,7 @@
-import os
 import random
 import re
+from enum import Enum, auto
 
-from dataset.loader import load_author
 from preprocessing.phonetizer import StandardPhonetizer
 
 
@@ -18,9 +17,17 @@ class Recognizer:
                 else:
                     to_analyze.append(line.split()[-1])
         patterns = self.check_for_patterns(to_analyze)
-        self.check_if_rymy_parzyste(patterns)
-        self.check_if_rymy_przeplatane(patterns)
-        self.check_if_rymy_okalajace(patterns)
+        parzyste = self.check_if_rymy_parzyste(patterns)
+        przeplatane = self.check_if_rymy_przeplatane(patterns)
+        okalajace = self.check_if_rymy_okalajace(patterns)
+        if parzyste > 0.5 and parzyste >= przeplatane and parzyste >= okalajace:
+            return RhymeType.PARZYSTE
+        elif przeplatane > 0.5 and przeplatane >= parzyste and przeplatane >= okalajace:
+            return RhymeType.PRZEPLATANE
+        elif okalajace > 0.5 and okalajace >= parzyste and okalajace >= przeplatane:
+            return RhymeType.OKALAJCE
+        else:
+            return RhymeType.INNE
 
     def check_if_rymy_parzyste(self, patterns):
         counter = 0
@@ -30,7 +37,7 @@ class Recognizer:
                 counter += 1
             all_pairs += 1
         # print("Rymy parzyste: ", counter, all_pairs)
-        return counter / all_pairs > 0.5
+        return counter / all_pairs
 
     def check_if_rymy_przeplatane(self, patterns):
         counter = 0
@@ -40,7 +47,7 @@ class Recognizer:
                 counter += 1
             all_pairs += 1
         # print("Rymy przeplatane: ", counter, all_pairs)
-        return counter / all_pairs > 0.5
+        return counter / all_pairs
 
     def check_if_rymy_okalajace(self, patterns):
         counter = 0
@@ -50,7 +57,7 @@ class Recognizer:
                 counter += 1
             all_fours += 1
         # print("Rymy okalające: ", counter, all_fours)
-        return counter / all_fours > 0.5
+        return counter / all_fours
 
     def are_rhymes(self, a, b, match=2):
         return a[-match:] == b[-match:]
@@ -77,3 +84,10 @@ class Recognizer:
             return random.choice(rhymes)
         else:
             return None
+
+
+class RhymeType(Enum):
+    PARZYSTE = auto()
+    OKALAJCE = auto()
+    PRZEPLATANE = auto()
+    INNE = auto()
