@@ -9,7 +9,7 @@ from recognizer.recognizer import Recognizer
 
 
 class Markov(BaseGenerator):
-    def __init__(self, preprocessor, recognizer):
+    def __init__(self, preprocessor=None, recognizer=Recognizer()):
         super().__init__(preprocessor)
         self.word_size = 0
         self.words = []
