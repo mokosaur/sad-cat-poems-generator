@@ -31,3 +31,39 @@ markov.fit(poems)
 ```python
 print(markov.generate())
 ```
+
+## Example poems
+
+### Hidden Markov Models
+
+Wargami o skały i krzaki szeptały własne imię pewno  
+Całować było w ogrodzie zbyt śpiewno  
+Klęczał niebiosów co tylko nocny lęk i ciężki lęku  
+Jęli w parowie więcej niż dźwięku  
+Widzę nie wiedziała jak nęcić jakim śmiechem pośmieszyć  
+Poprawiał tak sobie nieroztropnie niby przypominasz dziecięce uwierzyć
+
+Moje. I w dłoni mi próżno, jakby z roślin  
+Ciągną w supły pochody dnem dolin  
+W ciszy dzień brzeziną schodzi przez pole  
+O, w dole i na stole  
+Złoty wygina łuk i człowiek gdy z człowieka przemawia żywy  
+Znów wydzwania. Nie żegnajcie. Morze opiło się wiatru, niespokojne szarpie grzywy  
+Ulicami pochodnie, wiersz jest, żyłka słoneczna na ścianie. Zasłoń firanki  
+Się rzeźbi cisza... spokojny gotyk blanki  
+
+Gwiezdną która duszę z wszechświatem spokrewnią na nowo  
+Tę parskał śmiechem dziadyga w kark poklękłej ułudy  
+Domyśle puszyściał jej w ciasne nie zasklepię słowo  
+I był, o cudzie nad cudy
+Tuła na ból swój boczył się i trwogą uderza  
+Wracam długiej rozłące dłonie twoje niecierpliwe  
+Mogiłom zatajone w srebrze ukwiecenie odsłaniają swe jary wzgórza  
+Głąb pałaców ku górze czyniąc kroki płochliwe
+
+### LSTM
+
+Zeswał sił ratowałem, usta, nie ciała do kaki,  
+Chciała na mnie do niebie, y ności nie nie taki,  
+I na to na pusyczana i w przeswanych stroku,  
+Stali na nych śniadania, w rucimi na ściaku, 
