@@ -11,7 +11,7 @@ class Recognizer:
         text = text.lower()
         to_analyze = []
         for line in text.split("\n"):
-            if line != "":
+            if re.sub(" ", "", line) != "":
                 if len(line.split()[-1]) < 7:
                     to_analyze.append((" ".join(line.split()[-2:])))
                 else:
@@ -20,11 +20,11 @@ class Recognizer:
         parzyste = self.check_if_rymy_parzyste(patterns)
         przeplatane = self.check_if_rymy_przeplatane(patterns)
         okalajace = self.check_if_rymy_okalajace(patterns)
-        if parzyste > 0.5 and parzyste >= przeplatane and parzyste >= okalajace:
+        if parzyste > 0.2 and parzyste >= przeplatane and parzyste >= okalajace:
             return RhymeType.PARZYSTE
-        elif przeplatane > 0.5 and przeplatane >= parzyste and przeplatane >= okalajace:
+        elif przeplatane > 0.2 and przeplatane >= parzyste and przeplatane >= okalajace:
             return RhymeType.PRZEPLATANE
-        elif okalajace > 0.5 and okalajace >= parzyste and okalajace >= przeplatane:
+        elif okalajace > 0.2 and okalajace >= parzyste and okalajace >= przeplatane:
             return RhymeType.OKALAJCE
         else:
             return RhymeType.INNE
@@ -32,7 +32,7 @@ class Recognizer:
     def check_if_rymy_parzyste(self, patterns):
         counter = 0
         all_pairs = 0
-        for (a, b) in zip(patterns[:-1:2], patterns[1::2]):
+        for (a, b) in zip(patterns[0::2], patterns[1::2]):
             if a == b:
                 counter += 1
             all_pairs += 1
@@ -78,7 +78,7 @@ class Recognizer:
         word_list = StandardPhonetizer().transform(word_list)
         rhymes = []
         for i, potential in enumerate(word_list):
-            if word != potential and self.are_rhymes(word, potential, match=3):
+            if word.lower() != potential.lower() and self.are_rhymes(word, potential, match=3):
                 rhymes.append(i)
         if len(rhymes) > 1:
             return random.choice(rhymes)
